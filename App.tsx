@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PostInput, GeneratedPost } from './types';
 import { DEFAULT_INPUTS, CASINO_TYPES, TONES, LANGUAGES } from './constants';
 import { generateTelegramPost } from './services/geminiService';
@@ -12,11 +12,23 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // Check for API Key on load to help user debug deployment issues
+  useEffect(() => {
+    if (!process.env.API_KEY) {
+      console.warn("API_KEY environment variable is not defined. Ensure it is set in Vercel settings.");
+    }
+  }, []);
+
   const handleInputChange = (field: keyof PostInput, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const handleGenerate = async () => {
+    if (!process.env.API_KEY) {
+      setError("Configuration Error: API Key is missing in environment variables.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -26,7 +38,7 @@ const App: React.FC = () => {
         timestamp: Date.now()
       });
     } catch (err) {
-      setError("Failed to generate post. Please check your connection.");
+      setError("Failed to generate post. Please check your connection and API key.");
     } finally {
       setLoading(false);
     }
@@ -34,9 +46,10 @@ const App: React.FC = () => {
 
   const handleCopy = () => {
     if (!result) return;
-    navigator.clipboard.writeText(result.content);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+    navigator.clipboard.writeText(result.content).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    });
   };
 
   return (
