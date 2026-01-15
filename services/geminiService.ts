@@ -1,10 +1,14 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { PostInput } from "../types";
 
 export const generateTelegramPost = async (inputs: PostInput): Promise<string> => {
-  // @fix: Use process.env.API_KEY directly in a named parameter object
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("API_KEY is missing in environment variables.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const userPrompt = `
     Generate a Telegram post for these specific details:
@@ -18,42 +22,39 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
     - Language: ${inputs.language}
   `;
 
-  // @fix: Separating system instructions for better model adherence
   const systemInstruction = `
-    You are a Telegram casino bonus post template expert for Indian users.
-    Generate a HIGH-CONVERTING Telegram post based on variables provided.
-    
-    STRICT RULES:
-    1. Output must be 100% Telegram copy-paste safe.
-    2. Use Telegram-supported bold Unicode characters (like 𝗙𝘂𝗹𝗹𝘆 𝗡𝗲𝘄, 𝗦𝗶𝗴𝗻𝘂𝗽, etc.) for impact.
-    3. Language: Use the requested language (If Hinglish, use casual Indian Telegram style).
-    4. Emojis must be hype-driven but clean.
-    5. STRUCTURE (MANDATORY):
-       - Bold catchy headline
-       - Bonus & withdrawal details (bulleted with ⚡ or 🔥)
-       - Repeated casino link (exactly 2 times)
-       - Short explanation in the requested language
-       - Trust/Verification line (e.g., 100% Verified ✅)
-       - Urgency CTA (Today only / Limited slots)
+    You are a professional Telegram Casino Marketer specialized in the Indian market.
+    Your signature developer is @Its_Gods.
+    Generate a HIGH-CONVERTING, eye-catching Telegram post.
 
-    Output ONLY the final Telegram post. No meta-talk or explanations.
+    STRICT RULES:
+    1. Output must use Telegram-safe bold/italic formatting.
+    2. Use heavy Unicode Bold characters for headings (e.g., 𝗡𝗘𝗪 𝗟𝗢𝗢𝗧, 𝗦𝗜𝗚𝗡𝗨𝗣 𝗕𝗢𝗡𝗨𝗦).
+    3. Use plenty of casino/money emojis (🔥, 🎰, 💰, 🚀, 💎).
+    4. Language: If Hinglish, use "Telegram Slang" (e.g., 'Bhai log loot lo', 'Direct withdrawal', 'Sabko milega').
+    5. STRUCTURE:
+       - 💎 HEADLINE: Catchy & Bold
+       - 🎁 BONUS: Clearly stated
+       - ⚡ WITHDRAWAL: Fast & Minimum amount
+       - 🔗 LINK: Provide the casino link prominently (2 times)
+       - 🎯 CTA: Urgency (Limited Slots / Ending Soon)
+       - ✅ VERIFICATION: "100% Trusted & Verified by @Its_Gods"
+
+    Output ONLY the post text. No introductory or concluding remarks.
   `;
 
   try {
-    // @fix: Using gemini-3-flash-preview as recommended for text generation tasks
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: userPrompt,
       config: {
         systemInstruction: systemInstruction,
-        temperature: 0.8,
+        temperature: 0.9,
         topP: 0.95,
-        topK: 40,
       }
     });
 
-    // @fix: Access .text as a property, not a method, as per SDK guidelines
-    return response.text || "Failed to generate post. Please try again.";
+    return response.text || "Unexpected error generating post. Check your prompt or API status.";
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw error;
