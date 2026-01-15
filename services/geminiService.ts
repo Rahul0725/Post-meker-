@@ -3,9 +3,23 @@ import { GoogleGenAI } from "@google/genai";
 import { PostInput } from "../types";
 
 export const generateTelegramPost = async (inputs: PostInput): Promise<string> => {
-  // Use the API key directly from environment variables as per instructions.
-  // The system handles its availability.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Always use the required initialization pattern.
+  // Note: For Vercel deployments, process.env.API_KEY must be provided.
+  // If this is a client-side only app, ensure your build tool (like Vite/Webpack) 
+  // is configured to define process.env.API_KEY.
+  
+  let apiKey: string;
+  try {
+    apiKey = process.env.API_KEY || "";
+  } catch (e) {
+    throw new Error("Environment 'process' is not defined. Ensure your build tool defines process.env.API_KEY.");
+  }
+
+  if (!apiKey) {
+    throw new Error("API_KEY environment variable is empty or undefined.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: apiKey });
   
   const userPrompt = `
     Generate a Telegram post for these specific details:
@@ -21,7 +35,7 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
 
   const systemInstruction = `
     You are a professional Telegram Casino Marketer specialized in the Indian market.
-    Your identity/signature is @Its_Gods. Every post you create is verified by you.
+    Your identity/signature is @Its_Gods. 
     Generate a HIGH-CONVERTING, eye-catching Telegram post.
 
     STRICT RULES:
@@ -51,11 +65,14 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
       }
     });
 
-    // Directly access .text property from the response
-    return response.text || "Unexpected error: Empty response from AI.";
+    if (!response.text) {
+      throw new Error("AI returned an empty response.");
+    }
+
+    return response.text;
   } catch (error: any) {
     console.error("Gemini API Error:", error);
-    // Return a more descriptive error message to help the user identify environment issues
+    // Passing the specific error message up for easier debugging in Vercel
     throw new Error(error?.message || "Internal API Error");
   }
 };
