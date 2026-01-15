@@ -3,7 +3,8 @@ import { GoogleGenAI } from "@google/genai";
 import { PostInput } from "../types";
 
 export const generateTelegramPost = async (inputs: PostInput): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  // Use process.env.API_KEY directly as per SDK requirements
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
     You are a Telegram casino bonus post template expert for Indian users.
@@ -48,6 +49,6 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
     return response.text || "Failed to generate post. Please try again.";
   } catch (error) {
     console.error("Gemini API Error:", error);
-    throw new Error("Could not connect to AI service.");
+    throw error; // Re-throw to be caught by the App component
   }
 };

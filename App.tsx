@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PostInput, GeneratedPost } from './types';
 import { DEFAULT_INPUTS, CASINO_TYPES, TONES, LANGUAGES } from './constants';
 import { generateTelegramPost } from './services/geminiService';
@@ -12,31 +12,19 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // Check for API Key on load to help user debug deployment issues
-  useEffect(() => {
-    if (!process.env.API_KEY) {
-      console.warn("API_KEY environment variable is not defined. Ensure it is set in Vercel settings.");
-    }
-  }, []);
-
   const handleInputChange = (field: keyof PostInput, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
-    if (error) setError(null); // Clear error when user starts typing
+    if (error) setError(null); 
   };
 
   const handleGenerate = async () => {
-    // Basic validation for a "fresh" experience
+    // Basic field validation
     if (!inputs.casinoLink.trim()) {
-      setError("Please enter a Casino Link to generate a post.");
+      setError("Please enter a Casino Link.");
       return;
     }
     if (!inputs.signupBonus.trim()) {
-      setError("Please enter a Signup Bonus amount.");
-      return;
-    }
-
-    if (!process.env.API_KEY) {
-      setError("Configuration Error: API Key is missing in environment variables.");
+      setError("Please enter a Signup Bonus.");
       return;
     }
 
@@ -48,8 +36,9 @@ const App: React.FC = () => {
         content: postText,
         timestamp: Date.now()
       });
-    } catch (err) {
-      setError("Failed to generate post. Please check your connection and API key.");
+    } catch (err: any) {
+      console.error(err);
+      setError("Request failed. Please ensure your API Key is set correctly in the project settings.");
     } finally {
       setLoading(false);
     }
@@ -109,7 +98,7 @@ const App: React.FC = () => {
                 <select 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.casinoType}
-                  onChange={(e) => handleInputChange('casinoType', e.target.value)}
+                  onChange={(e) => handleInputChange('casinoType', e.target.value as any)}
                 >
                   {CASINO_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -173,7 +162,7 @@ const App: React.FC = () => {
                 <select 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.tone}
-                  onChange={(e) => handleInputChange('tone', e.target.value)}
+                  onChange={(e) => handleInputChange('tone', e.target.value as any)}
                 >
                   {TONES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -183,7 +172,7 @@ const App: React.FC = () => {
                 <select 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.language}
-                  onChange={(e) => handleInputChange('language', e.target.value)}
+                  onChange={(e) => handleInputChange('language', e.target.value as any)}
                 >
                   {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
@@ -246,7 +235,7 @@ const App: React.FC = () => {
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-repeat">
+            <div className="flex-1 overflow-y-auto p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-repeat min-h-[300px]">
               {result ? (
                 <div className="bg-[#17212b] p-5 rounded-2xl max-w-md mx-auto shadow-xl relative animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="absolute -left-2 top-4 w-4 h-4 bg-[#17212b] rotate-45"></div>
@@ -258,7 +247,7 @@ const App: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+                <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-10">
                   <i className="fa-brands fa-telegram text-8xl mb-6 text-slate-600"></i>
                   <p className="text-slate-400 max-w-xs font-medium">Your high-converting post preview will appear here once generated.</p>
                 </div>
