@@ -37,8 +37,8 @@ const App: React.FC = () => {
         timestamp: Date.now()
       });
     } catch (err: any) {
-      console.error(err);
-      setError("Request failed. Please ensure your API Key is set correctly in the project settings.");
+      console.error("API Error details:", err);
+      setError("Request failed. Please ensure the API Key is configured in your project settings.");
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center max-w-6xl mx-auto">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 flex flex-col items-center max-w-6xl mx-auto">
       {/* Header */}
       <header className="w-full text-center mb-10">
         <div className="inline-flex items-center gap-3 bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full mb-4">
@@ -69,14 +69,14 @@ const App: React.FC = () => {
         <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2">
           Casino Post <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 font-black">Master</span>
         </h1>
-        <p className="text-slate-400 max-w-xl mx-auto">
-          Generate high-converting, Unicode-bold, Hinglish-supported betting posts in seconds. Optimized for Telegram Indian communities.
+        <p className="text-slate-400 max-w-xl mx-auto mb-2">
+          Generate high-converting, Unicode-bold, Hinglish-supported betting posts. Optimized by <span className="text-indigo-400 font-bold">@Its_Gods</span> for premium performance.
         </p>
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
         {/* Form Column */}
-        <div className="lg:col-span-5 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-2xl backdrop-blur-sm">
+        <div className="lg:col-span-5 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-2xl backdrop-blur-sm h-fit">
           <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
             <div className="flex items-center gap-3">
               <div className="bg-indigo-600 h-8 w-8 rounded-lg flex items-center justify-center">
@@ -142,7 +142,7 @@ const App: React.FC = () => {
                 type="text" 
                 className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                 value={inputs.casinoLink}
-                placeholder="Paste your affiliate/direct link here"
+                placeholder="Paste your link here"
                 onChange={(e) => handleInputChange('casinoLink', e.target.value)}
               />
             </InputGroup>
@@ -180,104 +180,93 @@ const App: React.FC = () => {
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in zoom-in-95 duration-200">
+              <div className="bg-red-500/10 border border-red-500/50 p-4 rounded-xl flex items-center gap-3 text-red-400 text-sm">
                 <i className="fa-solid fa-circle-exclamation"></i>
-                {error}
+                <p>{error}</p>
               </div>
             )}
 
             <button 
               onClick={handleGenerate}
               disabled={loading}
-              className={`w-full py-4 mt-4 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3 shadow-lg ${
+              className={`w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-3 transition-all ${
                 loading 
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white hover:scale-[1.02] active:scale-[0.98]'
+                ? 'bg-slate-800 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:scale-[0.98]'
               }`}
             >
               {loading ? (
                 <>
-                  <i className="fa-solid fa-spinner animate-spin"></i>
+                  <i className="fa-solid fa-circle-notch fa-spin"></i>
                   Generating Magic...
                 </>
               ) : (
                 <>
                   <i className="fa-solid fa-wand-magic-sparkles"></i>
-                  GENERATE POST
+                  Generate Post
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* Preview Column */}
-        <div className="lg:col-span-7 flex flex-col h-full">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl flex-1 flex flex-col overflow-hidden shadow-2xl">
-            <div className="bg-slate-800/50 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                <span className="ml-2 text-xs font-bold text-slate-400 tracking-widest uppercase">Telegram Preview</span>
-              </div>
-              {result && (
+        {/* Result Column */}
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[500px]">
+          {result ? (
+            <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 flex flex-col h-full shadow-2xl relative overflow-hidden group">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-600/20 text-green-400 h-8 w-8 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-check text-sm"></i>
+                  </div>
+                  <h3 className="font-bold text-white">Generated Telegram Post</h3>
+                </div>
                 <button 
                   onClick={handleCopy}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-all ${
                     copySuccess 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+                    ? 'bg-green-600 text-white' 
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
-                  <i className={copySuccess ? "fa-solid fa-check" : "fa-solid fa-copy"}></i>
-                  {copySuccess ? 'COPIED!' : 'COPY POST'}
+                  <i className={`fa-solid ${copySuccess ? 'fa-check' : 'fa-copy'}`}></i>
+                  {copySuccess ? 'Copied!' : 'Copy Post'}
                 </button>
-              )}
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] bg-repeat min-h-[300px]">
-              {result ? (
-                <div className="bg-[#17212b] p-5 rounded-2xl max-w-md mx-auto shadow-xl relative animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="absolute -left-2 top-4 w-4 h-4 bg-[#17212b] rotate-45"></div>
-                  <pre className="whitespace-pre-wrap font-sans text-[15px] leading-relaxed text-[#f5f5f5] break-words select-all selection:bg-blue-500/30">
-                    {result.content}
-                  </pre>
-                  <div className="mt-2 text-[11px] text-[#708499] text-right">
-                    {new Date(result.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-10">
-                  <i className="fa-brands fa-telegram text-8xl mb-6 text-slate-600"></i>
-                  <p className="text-slate-400 max-w-xs font-medium">Your high-converting post preview will appear here once generated.</p>
-                </div>
-              )}
-            </div>
-
-            {result && (
-              <div className="bg-slate-800/30 p-4 border-t border-slate-700 text-center">
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black">
-                  Tip: Copy-paste directly into your Telegram Desktop or Mobile client.
-                </p>
               </div>
-            )}
-          </div>
+              
+              <div className="flex-grow bg-slate-950 border border-slate-800 rounded-2xl p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap text-slate-300 select-all overflow-y-auto">
+                {result.content}
+              </div>
+
+              <div className="mt-4 text-xs text-slate-500 flex items-center gap-2">
+                <i className="fa-regular fa-clock"></i>
+                Generated {new Date(result.timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-900/50 border border-dashed border-slate-800 rounded-3xl p-12 flex flex-col items-center justify-center text-center h-full">
+              <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
+                <i className="fa-solid fa-paper-plane text-slate-600 text-3xl"></i>
+              </div>
+              <h3 className="text-xl font-bold text-slate-400 mb-2">Ready to convert?</h3>
+              <p className="text-slate-500 max-w-sm">
+                Enter your casino details on the left and click generate to create a high-impact Telegram post.
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* Footer Info */}
-      <footer className="mt-12 text-slate-500 text-sm flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-shield-halved text-blue-500"></i>
-          <span>Secure & Anonymous</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-bolt-lightning text-yellow-500"></i>
-          <span>Instant Generation</span>
+      <footer className="mt-12 text-slate-600 text-sm flex flex-col items-center gap-2">
+        <p>© 2024 Telegram Casino Master. Powered by Gemini 3 Flash.</p>
+        <div className="flex gap-4">
+          <a href="#" className="hover:text-blue-400 transition-colors">Documentation</a>
+          <a href="#" className="hover:text-blue-400 transition-colors">Support</a>
         </div>
       </footer>
     </div>
   );
 };
 
+// @fix: Add the missing default export for index.tsx
 export default App;
