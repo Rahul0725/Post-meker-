@@ -21,9 +21,20 @@ const App: React.FC = () => {
 
   const handleInputChange = (field: keyof PostInput, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
+    if (error) setError(null); // Clear error when user starts typing
   };
 
   const handleGenerate = async () => {
+    // Basic validation for a "fresh" experience
+    if (!inputs.casinoLink.trim()) {
+      setError("Please enter a Casino Link to generate a post.");
+      return;
+    }
+    if (!inputs.signupBonus.trim()) {
+      setError("Please enter a Signup Bonus amount.");
+      return;
+    }
+
     if (!process.env.API_KEY) {
       setError("Configuration Error: API Key is missing in environment variables.");
       return;
@@ -52,6 +63,12 @@ const App: React.FC = () => {
     });
   };
 
+  const handleReset = () => {
+    setInputs(DEFAULT_INPUTS);
+    setResult(null);
+    setError(null);
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center max-w-6xl mx-auto">
       {/* Header */}
@@ -71,11 +88,19 @@ const App: React.FC = () => {
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
         {/* Form Column */}
         <div className="lg:col-span-5 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-2xl backdrop-blur-sm">
-          <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
-            <div className="bg-indigo-600 h-8 w-8 rounded-lg flex items-center justify-center">
-              <i className="fa-solid fa-sliders text-white text-sm"></i>
+          <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-600 h-8 w-8 rounded-lg flex items-center justify-center">
+                <i className="fa-solid fa-sliders text-white text-sm"></i>
+              </div>
+              <h2 className="text-xl font-bold text-white">Post Settings</h2>
             </div>
-            <h2 className="text-xl font-bold text-white">Post Settings</h2>
+            <button 
+              onClick={handleReset}
+              className="text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest"
+            >
+              Clear All
+            </button>
           </div>
 
           <div className="space-y-5">
@@ -128,7 +153,7 @@ const App: React.FC = () => {
                 type="text" 
                 className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                 value={inputs.casinoLink}
-                placeholder="https://..."
+                placeholder="Paste your affiliate/direct link here"
                 onChange={(e) => handleInputChange('casinoLink', e.target.value)}
               />
             </InputGroup>
@@ -138,7 +163,7 @@ const App: React.FC = () => {
                 type="text" 
                 className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                 value={inputs.telegramHandle}
-                placeholder="@BotName"
+                placeholder="@YourChannel"
                 onChange={(e) => handleInputChange('telegramHandle', e.target.value)}
               />
             </InputGroup>
@@ -164,6 +189,13 @@ const App: React.FC = () => {
                 </select>
               </InputGroup>
             </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in zoom-in-95 duration-200">
+                <i className="fa-solid fa-circle-exclamation"></i>
+                {error}
+              </div>
+            )}
 
             <button 
               onClick={handleGenerate}
@@ -224,14 +256,6 @@ const App: React.FC = () => {
                   <div className="mt-2 text-[11px] text-[#708499] text-right">
                     {new Date(result.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                </div>
-              ) : error ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                  <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
-                    <i className="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
-                  </div>
-                  <p className="text-red-400 font-semibold">{error}</p>
-                  <button onClick={handleGenerate} className="mt-4 text-blue-400 hover:underline text-sm font-bold">Try again</button>
                 </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-40">

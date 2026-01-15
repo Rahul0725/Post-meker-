@@ -3,11 +3,11 @@ import { PostInput } from './types';
 
 export const DEFAULT_INPUTS: PostInput = {
   casinoType: 'New',
-  signupBonus: '500',
-  wagering: '1x',
-  minWithdrawal: '100',
-  casinoLink: 'https://example.com/play',
-  telegramHandle: '@CasinoLootsIndia',
+  signupBonus: '',
+  wagering: '',
+  minWithdrawal: '',
+  casinoLink: '',
+  telegramHandle: '',
   tone: 'Hype',
   language: 'Hinglish',
 };
