@@ -1,14 +1,11 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { PostInput } from "../types";
 
 export const generateTelegramPost = async (inputs: PostInput): Promise<string> => {
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey) {
-    throw new Error("API_KEY is missing in environment variables.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use the API key directly from environment variables as per instructions.
+  // The system handles its availability.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const userPrompt = `
     Generate a Telegram post for these specific details:
@@ -24,7 +21,7 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
 
   const systemInstruction = `
     You are a professional Telegram Casino Marketer specialized in the Indian market.
-    Your signature developer is @Its_Gods.
+    Your identity/signature is @Its_Gods. Every post you create is verified by you.
     Generate a HIGH-CONVERTING, eye-catching Telegram post.
 
     STRICT RULES:
@@ -32,13 +29,13 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
     2. Use heavy Unicode Bold characters for headings (e.g., 𝗡𝗘𝗪 𝗟𝗢𝗢𝗧, 𝗦𝗜𝗚𝗡𝗨𝗣 𝗕𝗢𝗡𝗨𝗦).
     3. Use plenty of casino/money emojis (🔥, 🎰, 💰, 🚀, 💎).
     4. Language: If Hinglish, use "Telegram Slang" (e.g., 'Bhai log loot lo', 'Direct withdrawal', 'Sabko milega').
-    5. STRUCTURE:
+    5. STRUCTURE (MANDATORY):
        - 💎 HEADLINE: Catchy & Bold
        - 🎁 BONUS: Clearly stated
        - ⚡ WITHDRAWAL: Fast & Minimum amount
-       - 🔗 LINK: Provide the casino link prominently (2 times)
+       - 🔗 LINK: Provide the casino link prominently (exactly 2 times)
        - 🎯 CTA: Urgency (Limited Slots / Ending Soon)
-       - ✅ VERIFICATION: "100% Trusted & Verified by @Its_Gods"
+       - ✅ VERIFICATION: Must include "100% Trusted & Verified by @Its_Gods"
 
     Output ONLY the post text. No introductory or concluding remarks.
   `;
@@ -46,7 +43,7 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: userPrompt,
+      contents: [{ parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemInstruction,
         temperature: 0.9,
@@ -54,9 +51,11 @@ export const generateTelegramPost = async (inputs: PostInput): Promise<string> =
       }
     });
 
-    return response.text || "Unexpected error generating post. Check your prompt or API status.";
-  } catch (error) {
+    // Directly access .text property from the response
+    return response.text || "Unexpected error: Empty response from AI.";
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
-    throw error;
+    // Return a more descriptive error message to help the user identify environment issues
+    throw new Error(error?.message || "Internal API Error");
   }
 };

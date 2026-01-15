@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { PostInput, GeneratedPost } from './types';
 import { DEFAULT_INPUTS, CASINO_TYPES, TONES, LANGUAGES } from './constants';
@@ -36,7 +37,9 @@ const App: React.FC = () => {
       });
     } catch (err: any) {
       console.error("API Error details:", err);
-      setError("Request failed. Please ensure the API Key is configured in your project settings (Environment Variables).");
+      // Detailed error reporting to help users debugging Vercel deployments
+      const errorMessage = err.message || "Unknown error";
+      setError(`Generation Failed: ${errorMessage}. (Note: Ensure API_KEY is set in your Vercel/Project Environment Variables)`);
     } finally {
       setLoading(false);
     }
@@ -58,18 +61,20 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 flex flex-col items-center max-w-6xl mx-auto">
-      {/* Header */}
+      {/* Header with @Its_Gods branding */}
       <header className="w-full text-center mb-10">
         <div className="inline-flex items-center gap-3 bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full mb-4">
           <i className="fa-brands fa-telegram text-blue-400 text-xl"></i>
-          <span className="text-blue-400 font-bold uppercase tracking-wider text-xs">Premium Casino Post Tool</span>
+          <span className="text-blue-400 font-bold uppercase tracking-wider text-[10px]">Verified by @Its_Gods</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-2 tracking-tight">
           Casino Post <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 font-black">Master</span>
-          <span className="ml-2 bg-indigo-600 text-[10px] uppercase px-2 py-0.5 rounded align-middle">PRO</span>
         </h1>
-        <p className="text-slate-400 max-w-xl mx-auto mb-2 text-lg">
-          High-converting Telegram templates by <span className="text-blue-400 font-bold">@Its_Gods</span>
+        <p className="text-slate-400 max-w-xl mx-auto mb-2 text-lg font-medium">
+          Premium Telegram templates for high conversion.
+        </p>
+        <p className="text-blue-500 font-black text-sm uppercase tracking-widest">
+          Signature: @Its_Gods
         </p>
       </header>
 
@@ -78,24 +83,24 @@ const App: React.FC = () => {
         <div className="lg:col-span-5 bg-slate-900/40 border border-slate-800 p-6 rounded-3xl shadow-2xl backdrop-blur-md h-fit">
           <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 h-8 w-8 rounded-lg flex items-center justify-center">
-                <i className="fa-solid fa-bolt text-white text-sm"></i>
+              <div className="bg-blue-600 h-8 w-8 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/20">
+                <i className="fa-solid fa-gear text-white text-sm"></i>
               </div>
-              <h2 className="text-xl font-bold text-white tracking-wide">Configuration</h2>
+              <h2 className="text-xl font-bold text-white tracking-wide">Setup Post</h2>
             </div>
             <button 
               onClick={handleReset}
-              className="text-[10px] font-bold text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-widest"
+              className="text-[10px] font-black text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-[0.2em]"
             >
-              Reset Form
+              Reset
             </button>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <InputGroup label="Casino Type" icon="fa-solid fa-cube">
+              <InputGroup label="Casino Type" icon="fa-solid fa-dice">
                 <select 
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none"
+                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer"
                   value={inputs.casinoType}
                   onChange={(e) => handleInputChange('casinoType', e.target.value as any)}
                 >
@@ -103,50 +108,50 @@ const App: React.FC = () => {
                 </select>
               </InputGroup>
 
-              <InputGroup label="Signup Bonus" icon="fa-solid fa-indian-rupee-sign">
+              <InputGroup label="Signup Bonus" icon="fa-solid fa-coins">
                 <input 
                   type="text" 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.signupBonus}
-                  placeholder="89 / 500"
+                  placeholder="₹500 / Free Spin"
                   onChange={(e) => handleInputChange('signupBonus', e.target.value)}
                 />
               </InputGroup>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <InputGroup label="Wagering" icon="fa-solid fa-rotate-right">
+              <InputGroup label="Wagering" icon="fa-solid fa-arrows-spin">
                 <input 
                   type="text" 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.wagering}
-                  placeholder="3x / 10x"
+                  placeholder="1x / No Wager"
                   onChange={(e) => handleInputChange('wagering', e.target.value)}
                 />
               </InputGroup>
 
-              <InputGroup label="Min Withdraw" icon="fa-solid fa-wallet">
+              <InputGroup label="Min Withdraw" icon="fa-solid fa-receipt">
                 <input 
                   type="text" 
                   className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                   value={inputs.minWithdrawal}
-                  placeholder="100 / 500"
+                  placeholder="₹100"
                   onChange={(e) => handleInputChange('minWithdrawal', e.target.value)}
                 />
               </InputGroup>
             </div>
 
-            <InputGroup label="Casino Link" icon="fa-solid fa-globe">
+            <InputGroup label="Casino Link" icon="fa-solid fa-link">
               <input 
                 type="text" 
                 className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                 value={inputs.casinoLink}
-                placeholder="https://casino.com"
+                placeholder="https://loot-casino.com/join"
                 onChange={(e) => handleInputChange('casinoLink', e.target.value)}
               />
             </InputGroup>
 
-            <InputGroup label="Telegram Username (Optional)" icon="fa-brands fa-telegram">
+            <InputGroup label="Telegram Username" icon="fa-brands fa-telegram">
               <input 
                 type="text" 
                 className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all"
@@ -157,9 +162,9 @@ const App: React.FC = () => {
             </InputGroup>
 
             <div className="grid grid-cols-2 gap-4">
-              <InputGroup label="Tone" icon="fa-solid fa-fire">
+              <InputGroup label="Post Tone" icon="fa-solid fa-fire-flame-curved">
                 <select 
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none"
+                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer"
                   value={inputs.tone}
                   onChange={(e) => handleInputChange('tone', e.target.value as any)}
                 >
@@ -167,9 +172,9 @@ const App: React.FC = () => {
                 </select>
               </InputGroup>
 
-              <InputGroup label="Language" icon="fa-solid fa-earth-asia">
+              <InputGroup label="Language" icon="fa-solid fa-comments">
                 <select 
-                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none"
+                  className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-600 transition-all appearance-none cursor-pointer"
                   value={inputs.language}
                   onChange={(e) => handleInputChange('language', e.target.value as any)}
                 >
@@ -179,29 +184,32 @@ const App: React.FC = () => {
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl flex items-start gap-3 text-red-400 text-sm animate-pulse">
-                <i className="fa-solid fa-circle-exclamation mt-0.5"></i>
-                <p className="font-medium leading-snug">{error}</p>
+              <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-2xl flex flex-col gap-2 text-red-400 text-sm animate-pulse">
+                <div className="flex items-center gap-2 font-black uppercase tracking-wider text-xs">
+                   <i className="fa-solid fa-triangle-exclamation"></i>
+                   System Error
+                </div>
+                <p className="font-medium leading-relaxed">{error}</p>
               </div>
             )}
 
             <button 
               onClick={handleGenerate}
               disabled={loading}
-              className={`w-full py-4 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all uppercase tracking-widest shadow-lg ${
+              className={`w-full py-5 rounded-2xl font-black text-white flex items-center justify-center gap-3 transition-all uppercase tracking-[0.15em] shadow-xl ${
                 loading 
-                ? 'bg-slate-800 cursor-not-allowed opacity-50' 
-                : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-blue-500/20 active:scale-[0.97]'
+                ? 'bg-slate-800 cursor-wait' 
+                : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:scale-[1.02] active:scale-[0.98] hover:shadow-blue-500/30'
               }`}
             >
               {loading ? (
                 <>
                   <i className="fa-solid fa-spinner fa-spin"></i>
-                  Processing...
+                  Generating...
                 </>
               ) : (
                 <>
-                  <i className="fa-solid fa-wand-magic-sparkles"></i>
+                  <i className="fa-solid fa-rocket"></i>
                   Generate Post
                 </>
               )}
@@ -210,70 +218,73 @@ const App: React.FC = () => {
         </div>
 
         {/* Result Column */}
-        <div className="lg:col-span-7 flex flex-col h-full min-h-[550px]">
+        <div className="lg:col-span-7 flex flex-col h-full min-h-[500px]">
           {result ? (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col h-full shadow-2xl backdrop-blur-sm relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 flex flex-col h-full shadow-2xl backdrop-blur-md relative animate-in fade-in zoom-in-95 duration-300">
               <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="bg-green-500/10 text-green-400 h-9 w-9 rounded-xl flex items-center justify-center border border-green-500/20">
-                    <i className="fa-solid fa-paper-plane text-sm"></i>
+                <div className="flex items-center gap-4">
+                  <div className="bg-blue-600/20 text-blue-400 h-10 w-10 rounded-xl flex items-center justify-center border border-blue-500/30">
+                    <i className="fa-solid fa-align-left"></i>
                   </div>
                   <div>
-                    <h3 className="font-bold text-white text-lg">Telegram Preview</h3>
-                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-tighter">Ready to copy & paste</p>
+                    <h3 className="font-black text-white text-xl tracking-tight uppercase">Template Ready</h3>
+                    <p className="text-[10px] text-slate-500 font-black tracking-widest uppercase">High CTR Optimized</p>
                   </div>
                 </div>
                 <button 
                   onClick={handleCopy}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-sm transition-all uppercase tracking-wide shadow-sm ${
+                  className={`px-8 py-3 rounded-xl font-black text-sm transition-all uppercase tracking-[0.1em] ${
                     copySuccess 
                     ? 'bg-green-600 text-white scale-105' 
-                    : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                    : 'bg-slate-100 text-slate-950 hover:bg-white'
                   }`}
                 >
-                  <i className={`fa-solid ${copySuccess ? 'fa-check' : 'fa-copy'}`}></i>
+                  <i className={`fa-solid ${copySuccess ? 'fa-check' : 'fa-copy'} mr-2`}></i>
                   {copySuccess ? 'Copied' : 'Copy'}
                 </button>
               </div>
               
-              <div className="flex-grow bg-[#17212b] border border-slate-800/50 rounded-2xl p-6 font-sans text-[15px] leading-relaxed whitespace-pre-wrap text-[#f5f5f5] select-all overflow-y-auto custom-scrollbar shadow-inner">
+              <div className="flex-grow bg-black/40 border border-slate-800/50 rounded-2xl p-6 font-sans text-base leading-relaxed whitespace-pre-wrap text-white selection:bg-blue-600 overflow-y-auto">
                 {result.content}
               </div>
 
-              <div className="mt-5 flex items-center justify-between">
-                <div className="text-[10px] text-slate-500 flex items-center gap-2 font-bold uppercase tracking-widest">
+              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="text-[10px] text-slate-500 font-black uppercase tracking-widest flex items-center gap-2">
                   <i className="fa-regular fa-clock"></i>
-                  Generated {new Date(result.timestamp).toLocaleTimeString()}
+                  Created {new Date(result.timestamp).toLocaleTimeString()}
                 </div>
-                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">
+                <div className="text-xs text-blue-400 font-black uppercase tracking-[0.1em]">
                   Verified by @Its_Gods
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-slate-900/20 border-2 border-dashed border-slate-800 rounded-3xl p-12 flex flex-col items-center justify-center text-center h-full group transition-colors hover:border-slate-700">
-              <div className="w-24 h-24 bg-slate-800/30 rounded-full flex items-center justify-center mb-8 border border-slate-800 group-hover:bg-slate-800/50 transition-all">
-                <i className="fa-brands fa-telegram text-slate-700 text-5xl group-hover:text-blue-500 transition-colors"></i>
+            <div className="bg-slate-900/10 border-2 border-dashed border-slate-800/40 rounded-3xl p-16 flex flex-col items-center justify-center text-center h-full">
+              <div className="w-24 h-24 bg-slate-900/50 rounded-full flex items-center justify-center mb-8 border border-slate-800/50">
+                <i className="fa-brands fa-telegram text-slate-700 text-5xl"></i>
               </div>
-              <h3 className="text-2xl font-black text-slate-400 mb-3 tracking-tight uppercase">Ready for Hype?</h3>
-              <p className="text-slate-500 max-w-sm leading-relaxed font-medium">
-                Fill the details and generate your professional casino promotion post. Created for speed and high CTR.
+              <h3 className="text-2xl font-black text-slate-500 mb-3 uppercase tracking-tighter">No Post Generated</h3>
+              <p className="text-slate-600 max-w-sm leading-relaxed text-sm font-medium">
+                Your high-converting casino post will appear here. Input your details to start.
               </p>
             </div>
           )}
         </div>
       </main>
 
-      <footer className="mt-16 mb-8 w-full border-t border-slate-900 pt-8 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-6">
-          <a href="https://t.me/Its_Gods" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-slate-500 hover:text-blue-400 transition-colors font-bold text-sm uppercase tracking-widest">
-            <i className="fa-brands fa-telegram text-lg"></i>
-            Developer: @Its_Gods
-          </a>
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-800"></span>
-          <span className="text-slate-500 font-bold text-sm uppercase tracking-widest">Powered by Gemini 3 Flash</span>
+      <footer className="mt-20 mb-10 w-full flex flex-col items-center gap-6">
+        <div className="h-px w-24 bg-slate-800"></div>
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-12">
+          <div className="flex items-center gap-3">
+             <i className="fa-solid fa-code text-blue-600"></i>
+             <span className="text-slate-500 text-xs font-black uppercase tracking-[0.2em]">Designed by @Its_Gods</span>
+          </div>
+          <div className="flex items-center gap-3">
+             <i className="fa-brands fa-telegram text-blue-500"></i>
+             <a href="https://t.me/Its_Gods" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-white transition-colors text-xs font-black uppercase tracking-[0.2em]">Join Channel</a>
+          </div>
         </div>
-        <p className="text-slate-700 text-[10px] uppercase font-black tracking-[0.2em]">© 2025 CASINO POST MASTER PRO</p>
+        <p className="text-slate-800 text-[9px] font-black uppercase tracking-[0.4em]">© 2025 PREMIUM CASINO GENERATOR</p>
       </footer>
     </div>
   );
